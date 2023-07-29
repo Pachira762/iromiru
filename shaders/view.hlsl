@@ -41,7 +41,7 @@ float4 ViewHue(float3 color)
 float4 ViewSaturation(float3 color)
 {
     float saturation = ToHsl(color).y;
-    return float4(HslToRgb(lerp(-120.f, 60.f, saturation) / 360.f, 0.8f, saturation), 1.f);
+    return float4(HsvToRgb(lerp(-120.f, 60.f, saturation) / 360.f, 0.8f, saturation), 1.f);
 }
 
 float4 ViewBrightness(float3 color)

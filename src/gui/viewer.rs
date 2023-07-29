@@ -41,7 +41,7 @@ impl Viewer {
                     style: CS_HREDRAW | CS_VREDRAW,
                     lpfnWndProc: Some(wndproc),
                     hInstance: module_handle(),
-                    hIcon: LoadIconW(None, IDI_APPLICATION)?,
+                    hIcon: LoadIconW(module_handle(), PCWSTR(1 as _))?,
                     hCursor: LoadCursorW(None, IDC_ARROW)?,
                     hbrBackground: HBRUSH((COLOR_WINDOW.0 + 1) as _),
                     lpszClassName: s!("IroMiru_Viewer"),

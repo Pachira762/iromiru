@@ -9,6 +9,59 @@ float3 ColorIdToRgb(uint color_index)
     return float3(color_index & 0xff, (color_index & 0xff00) >> 8, (color_index & 0xff0000) >> 16) / float(0xff);
 }
 
+float3 RgbToPosition(float3 rgb)
+{
+    return 2.f * rgb - 1.f;
+}
+
+float3 HsvToPosition(float3 rgb)
+{
+    float3 hsv = ToHsv(rgb);
+    float h = hsv.x;
+    float s = hsv.y;
+    float v = 2.f * hsv.z - 1.f;
+
+    float x, z;
+    sincos(2.f * Pi * h, z, x);
+    x *= s;
+    z *= s;
+    float y = v;
+
+    return float3(x, y, -z);
+}
+
+float3 HslToPosition(float3 rgb)
+{
+    float3 hsl = ToHsl(rgb);
+    float h = hsl.x;             // 0 ~ 1
+    float s = hsl.y;             // 0 ~ 1
+    float l = 2.f * hsl.z - 1.f; // -1 ~ +1
+
+    float r = sqrt(1.f - l * l);
+    float s_max = 1.00001f - abs(l);
+
+    float x, z;
+    sincos(2.f * Pi * h, z, x);
+    x *= r * (s / s_max);
+    z *= r * (s / s_max);
+    float y = l;
+
+    return float3(x, y, -z);
+}
+
+float3 YuvToPosition(float3 rgb)
+{
+    static const float s = 2.f * -0.5f;
+    static const float c = 2.f * 0.114572f;
+
+    float3 yuv = 2.f * ToYuv(rgb) - 1.f;
+    float u = -yuv.y;
+    float v = yuv.z;
+    float2 uv = float2(u, v);
+
+    return float3(dot(uv, float2(c, -s)), yuv.x, dot(uv, float2(s, c)));
+}
+
 #ifdef COUNT
 
 cbuffer Params : register(b0) {

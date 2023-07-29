@@ -89,57 +89,45 @@ float ToLuma(float3 rgb)
     return dot(rgb, Luma);
 }
 
-float3 RgbToPosition(float3 rgb)
+float3 HsvToRgb(float hue, float saturation, float luminance)
 {
-    return 2.f * rgb - 1.f;
-}
+    float r = luminance;
+    float g = luminance;
+    float b = luminance;
 
-float3 HsvToPosition(float3 rgb)
-{
-    float3 hsv = ToHsv(rgb);
-    float h = hsv.x;
-    float s = hsv.y;
-    float v = 2.f * hsv.z - 1.f;
+    float h = frac(hue + 1.f);
+    uint i = (uint)((359.9999f * h) / 60.f);
+    float f = 6.f * h - (float)i;
+    float s = saturation;
 
-    float x, z;
-    sincos(2.f * Pi * h, z, x);
-    x *= s;
-    z *= s;
-    float y = v;
+    switch (i) {
+    case 0:
+        g *= 1.f - s * (1.f - f);
+        b *= 1.f - s;
+        break;
+    case 1:
+        r *= 1.f - s * f;
+        b *= 1.f - s;
+        break;
+    case 2:
+        r *= 1.f - s;
+        b *= 1.f - s * (1.f - f);
+        break;
+    case 3:
+        r *= 1.f - s;
+        g *= 1.f - s * f;
+        break;
+    case 4:
+        r *= 1.f - s * (1.f - f);
+        g *= 1.f - s;
+        break;
+    case 5:
+        g *= 1.f - s;
+        b *= 1.f - s * f;
+        break;
+    }
 
-    return float3(x, y, -z);
-}
-
-float3 HslToPosition(float3 rgb)
-{
-    float3 hsl = ToHsl(rgb);
-    float h = hsl.x;             // 0 ~ 1
-    float s = hsl.y;             // 0 ~ 1
-    float l = 2.f * hsl.z - 1.f; // -1 ~ +1
-
-    float r = sqrt(1.f - l * l);
-    float s_max = 1.00001f - abs(l);
-
-    float x, z;
-    sincos(2.f * Pi * h, z, x);
-    x *= r * (s / s_max);
-    z *= r * (s / s_max);
-    float y = l;
-
-    return float3(x, y, -z);
-}
-
-float3 YuvToPosition(float3 rgb)
-{
-    static const float s = 2.f * -0.5f;
-    static const float c = 2.f * 0.114572f;
-
-    float3 yuv = 2.f * ToYuv(rgb) - 1.f;
-    float u = -yuv.y;
-    float v = yuv.z;
-    float2 uv = float2(u, v);
-
-    return float3(dot(uv, float2(c, -s)), yuv.x, dot(uv, float2(s, c)));
+    return float3(r, g, b);
 }
 
 float3 HslToRgb(float hue, float saturation, float luminance)
