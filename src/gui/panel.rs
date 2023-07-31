@@ -231,7 +231,7 @@ impl Panel {
                         Axis::Vertical,
                         0,
                         &[
-                            &Text::new((0, 0), s!("Color Cloud")),
+                            &Text::new((0, 0), s!("IroSphere")),
                             &Radio::new(
                                 (0, 5),
                                 state.color_cloud_mode == ColorCloudMode::Disable,
